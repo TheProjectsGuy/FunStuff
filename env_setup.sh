@@ -233,6 +233,7 @@ conda_install -c conda-forge einops
 conda_install -c conda-forge selenium
 conda_install -c conda-forge pandas
 conda_install -c conda-forge odfpy
+conda_install -c conda-forge tyro
 # Core packages using pip_install
 if [ $dev_tools == "true" ]; then 
     echo_info "------ Installing documentation and packaging tools ------"

@@ -12,4 +12,4 @@ Random web scraping scripts.
 
 | S. No. | Item Name | Description |
 | :----- | :-------- | :---------- |
-| 1 | [airtel-packs.py](./airtel-packs.py) | Grab all pre-paid recharge plans by Airtel (India) and display the cheapest ones |
+| 1 | [recharge_packs.py](./recharge_packs.py) | Grab all pre-paid recharge plans by Indian telecoms and display the cheapest ones |
