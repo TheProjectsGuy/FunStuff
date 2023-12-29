@@ -44,6 +44,9 @@ from typing import Literal
 from selenium import webdriver
 from dataclasses import dataclass, field
 from selenium.webdriver.common.by import By
+from selenium.webdriver import ActionChains
+from selenium.common.exceptions import \
+        ElementClickInterceptedException
 
 
 # %%
@@ -59,7 +62,6 @@ def find_non_integer_or_period(text):
 
 
 # %%
-web_addr = "https://www.airtel.in/recharge-online"
 sheet_columns = ["Cost (INR)", "Validity (Days)", "Data Size (GB)", 
                     "Data Renewal"]
 
@@ -76,7 +78,7 @@ class LocalArgs:
 # %%
 web_addrs = {
     "airtel": "https://www.airtel.in/recharge-online",
-    "vi": "https://www.myvi.in/prepaid/online-mobile-recharge"
+    "vi": "https://www.myvi.in/prepaid/online-mobile-recharge",
 }
 
 
@@ -261,7 +263,7 @@ def main(args: LocalArgs):
     web_addr = web_addrs[args.net_provider]
     # Load webpage
     driver.get(web_addr)
-    driver.implicitly_wait(2)
+    driver.implicitly_wait(2)   # Max timeout of 2 sec
     if args.net_provider == "airtel":
         dfs = grab_airtel(driver)
     elif args.net_provider == "vi":
@@ -278,8 +280,11 @@ def main(args: LocalArgs):
 
 if __name__ == "__main__" and "ipykernel" not in sys.argv[0]:
     try:
+        start_time = time.time()
         args = tyro.cli(LocalArgs)
         main(args)
+        end_time = time.time()
+        print(f"Total time: {end_time - start_time:.3f} sec")
     except SystemExit as exc:
         print(f"System Exit: {exc}")
     except:
@@ -288,3 +293,101 @@ if __name__ == "__main__" and "ipykernel" not in sys.argv[0]:
 
 
 # %%
+# Experimental section
+
+# %%
+web_addrs_ = {
+    "airtel": "https://www.airtel.in/recharge-online",
+    "vi": "https://www.myvi.in/prepaid/online-mobile-recharge",
+    "jio": "https://www.jio.com/selfcare/plans/mobility/prepaid-plans-list/"
+}
+driver = webdriver.Chrome()
+web_addr = web_addrs_["jio"]
+driver.get(web_addr)
+driver.implicitly_wait(2)
+
+# %%
+def grab_jio(driver):
+    dfs = { # The names of the plans (spreadsheet) and their content
+        "names": [],
+        "pd": [],
+    }
+    sidebar_elem = driver.find_element(By.CLASS_NAME, 
+                                        "simplebar-content")
+    plan_buttons = sidebar_elem.find_elements(By.TAG_NAME, "button")
+    plan_sheets = ["Popular Plans", "Data Packs", "JioPhone"]
+    for plan_button in plan_buttons:
+        if plan_button.text not in plan_sheets:
+            # Not paying focus on these plans
+            continue
+        plan_button.click()
+        print(plan_button.text)
+        # Each plan sheet has many categories for packs
+        elems = driver.find_elements(By.ID, "ISDContainer")
+        for elem in elems:
+            packs_header = elem.find_element(By.CLASS_NAME, 
+                                        "j-accordion-panel")
+            packs_header_title = packs_header.find_element(By.CLASS_NAME,
+                                        "j-listBlock__block-text")
+            header_title = packs_header_title.text
+            print(f"--> {header_title}")
+            if header_title.find("Plans") != -1:
+                header_title = header_title[:\
+                                        header_title.find("Plans")-1]
+            else:
+                header_title = header_title[:\
+                                        header_title.find("(")-1]
+            if header_title == "Top Trending":
+                # Other categories will have this
+                if packs_header.get_attribute("aria-expanded") \
+                        == "true":
+                    packs_header_title.click()  # Close it
+                continue
+            print(f"----> {header_title}")
+            # Expand category
+            if packs_header.get_attribute("aria-expanded") == "false":
+                pass
+
+grab_jio(driver)
+
+# %%
+dfs = { # The names of the plans (spreadsheet) and their content
+    "names": [],
+    "pd": [],
+}
+sidebar_elem = driver.find_element(By.CLASS_NAME, 
+                                    "simplebar-content")
+plan_buttons = sidebar_elem.find_elements(By.TAG_NAME, "button")
+plan_sheets = ["Popular Plans", "JioPhone", "Data Packs"]
+plan_sheets = ["Popular Plans"]
+for plan_button in plan_buttons:
+    if plan_button.text not in plan_sheets:
+        # Not paying focus on these plans
+        continue
+    print(plan_button.text)
+    ActionChains(driver).click(plan_button).perform()
+    # Each plan sheet has many categories for packs
+    elems = driver.find_elements(By.ID, "ISDContainer")
+    for elem in elems:
+        packs_header = elem.find_element(By.CLASS_NAME, 
+                                    "j-accordion-panel")
+        packs_header_title = packs_header.find_element(By.CLASS_NAME,
+                                    "j-listBlock__block-text")
+        header_title = packs_header_title.text
+        if header_title.find("Plans") != -1:
+            header_title = header_title[:header_title.find("Plans")-1]
+        else:
+            header_title = header_title[:header_title.find("(")-1]
+        if header_title == "Top Trending":
+            # Don't need to see summary over entire data
+            continue
+        print(f"----> {header_title}")
+        # Expand category
+        if packs_header.get_attribute("aria-expanded") == "false":
+            ActionChains(driver).click(packs_header_title).perform()
+        packs_grid = packs_header.find_element(By.CLASS_NAME,
+                                    "j-accordion-panel__inner")
+
+
+# %%
+
