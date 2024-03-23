@@ -1,0 +1,7 @@
+# Ignore CSV files
+*.csv
+# Ignore test files
+test_*.py
+# Ignore the data folders
+ignore/
+data/
