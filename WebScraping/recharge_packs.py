@@ -35,6 +35,7 @@
 # %%
 import os
 import sys
+import pdb
 import tyro
 import time
 import logging
@@ -93,7 +94,8 @@ def grab_airtel(driver):
     for elem in elems:
         # Each is a separate tab
         sheet_name = elem.get_attribute("data-tab-name")
-        if sheet_name == "International Roaming" or \
+        if sheet_name in ["International Roaming", 
+                    "Inflight Roaming packs"] or \
                 sheet_name.startswith("Talktime"):
             continue
         df = pd.DataFrame(columns=sheet_columns)
