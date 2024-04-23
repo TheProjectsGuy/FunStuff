@@ -1,0 +1,16 @@
+# Ignore the country data files
+*.gpkg
+*.json
+*.zip
+shapefiles/
+soi/
+*.cpg
+*.CPG
+*.dpg
+*.prj
+*.shp
+*.shp.xml
+*.shx
+*.dbf
+*.sbn
+*.sbx

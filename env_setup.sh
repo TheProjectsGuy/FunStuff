@@ -234,14 +234,26 @@ conda_install -c conda-forge selenium
 conda_install -c conda-forge pandas
 conda_install -c conda-forge odfpy
 conda_install -c conda-forge tyro
+conda_install -c conda-forge pypdf2
+conda_install -c conda-forge joblib
+conda_install -c conda-forge plotly
+conda_install -c conda-forge babel
+conda_install -c conda-forge dash
+conda_raw_install -c conda-forge geopandas
+conda_install -c conda-forge geodatasets
+conda_install -c conda-forge folium
 # Core packages using pip_install
+# Check for dev
 if [ $dev_tools == "true" ]; then 
     echo_info "------ Installing documentation and packaging tools ------"
     # Other packages (only for development)
     conda_install -c conda-forge jupyter
+    conda_install -c conda-forge pydantic
 elif [ $dev_tools == "false" ]; then
     echo_info "Skipping documentation and packaging tools"
 fi
+# Post dev tools
+conda_install -c conda-forge jupyter-dash
 
 # Installation ended
 end_time=$(date)
