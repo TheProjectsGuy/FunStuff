@@ -63,7 +63,8 @@ def parse_args() -> argparse.Namespace:
             "long"], help="Length of the password", 
             default=os.getenv("PWGEN_DEFAULT_LEN", "medium"))
     parser.add_argument("-e", "--extra", help="Extra characters to "\
-            "be included in the password (or segments)", 
+            "be included in the password (or segments). Only for "\
+            "'hyphen' type.", 
             default=os.getenv("PWGEN_DEFAULT_EXTRA", None))
     args, unknown_args = parser.parse_known_args()
     if len(unknown_args) > 0:
