@@ -6,7 +6,9 @@
 # %%[markdown]
 """
 # Data Download
-    
+
+There are two sources (as mentioned below)
+
 ## Surveys of India
 
 Official maps from Survey of India (Ministry of Science and 
@@ -35,7 +37,7 @@ wget https://geodata.ucdavis.edu/gadm/gadm4.1/json/gadm41_IND_3.json.zip
 # %%[markdown]
 """
 # Notes
-    
+
 ## Coordinate Systems
 
 The default data is in Geographic Coordinate System (GCS) of
@@ -144,7 +146,7 @@ different purposes
 
 # %%
 import folium
-m = folium.Map(location=[12.8850292, 77.5958689], zoom_start=17)
+m = folium.Map(location=[12.8830709, 77.5986285], zoom_start=17)
 m
 
 # %%
@@ -160,6 +162,11 @@ def show_india_data(filename: str, shift_crs:bool = True):
     data["area_km_2"] = data.area / 1e6
     return data
 
+
+# %%[markdown]
+"""
+# GDAM Maps (UC Davis)
+"""
 
 # %%
 data = show_india_data("./gadm41_IND.gpkg") # India geopackage
@@ -180,6 +187,11 @@ data.explore("area_km_2", legend=False)
 # %%
 data = show_india_data("./shapefiles/gadm41_IND_3.shp") # Taluks
 data.explore("area_km_2", legend=False)
+
+# %%[markdown]
+"""
+# Survey of India Maps
+"""
 
 # %%
 data = show_india_data("./soi/STATE_BOUNDARY.shp", False)  # States
